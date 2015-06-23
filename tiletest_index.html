@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style>
+
+body {
+  margin: 0;
+}
+
+.dot {
+  stroke: #0000ff;
+  /*z-index: 2;*/
+  fill: none;
+}
+
+path {
+  fill: none;
+  stroke: #000;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+
+.major_road { stroke: #776; }
+.minor_road { stroke: #ccb; }
+.highway { stroke: #f39; stroke-width: 1.5px; }
+.rail { stroke: #7de; }
+
+</style>
+<body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script>
+<script src="d3.geo.tile.min.js"></script>
+<script>
+
+var width = Math.max(960, window.innerWidth),
+    height = Math.max(500, window.innerHeight);
+
+var tiler = d3.geo.tile()
+    .size([width, height]);
+
+var projection = d3.geo.mercator()
+    .center([-122.33, 47.61])
+    .scale((1 << 21) / 2 / Math.PI)
+    .translate([width / 2, height / 2]);
+    
+var path = d3.geo.path()
+    .projection(projection);
+
+var svg = d3.select("body").append("svg")
+    .attr("width", width)
+    .attr("height", height);
+
+svg.selectAll("g")
+    .data(tiler
+      .scale(projection.scale() * 2 * Math.PI)
+      .translate(projection([0, 0])))
+  .enter().append("g")
+    .each(function(d) {
+      var g = d3.select(this);
+      d3.json("http://" + ["a", "b", "c"][(d[0] * 31 + d[1]) % 3] + ".tile.openstreetmap.us/vectiles-highroad/" + d[2] + "/" + d[0] + "/" + d[1] + ".json", function(error, json) {
+        g.selectAll("path")
+            .data(json.features.sort(function(a, b) { return a.properties.sort_key - b.properties.sort_key; }))
+          .enter().append("path")
+            .attr("class", function(d) { return d.properties.kind; })
+            .attr("d", path);
+      });
+    });
+
+console.log("ABOVE");
+
+var my_rest=[];
+console.log(projection([-122.4, 47.6]));
+console.log(projection([0, 0]));
+
+d3.csv("sample.csv", function(error, data) {
+  if (error) throw error;
+
+  data.forEach(function(d) {
+    d.category = d.category;
+    d.long = d.long;
+    d.lat = d.lat;
+    console.log(data);
+  });
+
+  svg.selectAll(".dot")
+    .data(data)
+    // console.log(data);
+    .enter().append("circle")
+    .attr("class", "dot")
+    .attr("r", 10)
+    .attr("cx", function(d){
+        // console.log(d);
+        // console.log(d.longitude)
+        console.log(d);
+        console.log(projection([d.long, d.lat]));
+        // return projection([d.long, d.lat])[0];
+        return projection([-122.4, 47.6])[0];
+        // console.log(g);
+    })
+    .attr("cy", function(d){
+        // return projection([d.long, d.lat])[1];
+        return projection([-122.4, 47.6])[1];
+    });
+
+});
+
+</script>n
