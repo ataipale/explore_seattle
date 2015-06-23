@@ -75,9 +75,9 @@ d3.csv("rest_meta.csv", function(error, data) {
 
   data.forEach(function(d) {
     d.category = d.category;
-    console.log(d.location); 
-    d.long = d.location.coordinate.longitude;
-    d.lat = d.location.coordinate.latitude;
+    console.log(d.location);
+    d.long = d['location.coordinate.longitude'];
+    d.lat = d['location.coordinate.latitude'];
   });
 
   svg.selectAll(".dot")
