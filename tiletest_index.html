@@ -37,7 +37,7 @@ var tiler = d3.geo.tile()
     .size([width, height]);
 
 var projection = d3.geo.mercator()
-    .center([-122.33, 47.61])
+    .center([-122.2920, 47.6302])
     .scale((1 << 21) / 4 / Math.PI)
     .translate([width / 2, height / 2]);
 
@@ -70,14 +70,14 @@ var my_rest=[];
 console.log(projection([-122.4, 47.6]));
 console.log(projection([0, 0]));
 
-d3.csv("sample.csv", function(error, data) {
+d3.csv("rest_meta.csv", function(error, data) {
   if (error) throw error;
 
   data.forEach(function(d) {
     d.category = d.category;
-    d.long = d.long;
-    d.lat = d.lat;
-    console.log(data);
+    console.log(d.location); 
+    d.long = d.location.coordinate.longitude;
+    d.lat = d.location.coordinate.latitude;
   });
 
   svg.selectAll(".dot")
