@@ -6,11 +6,11 @@ body {
   margin: 0;
 }
 
-.dot {
+/*.dot {
   stroke: #0000ff;
-  /*z-index: 2;*/
+  z-index: 2;
   fill: none;
-}
+}*/
 
 path {
   fill: none;
@@ -27,7 +27,7 @@ path {
 </style>
 <body>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script>
-<script src="d3.geo.tile.min.js"></script>
+<script src="/static/d3.geo.tile.min.js"></script>
 <script>
 
 var width = Math.max(960, window.innerWidth),
@@ -66,38 +66,86 @@ svg.selectAll("g")
 
 console.log("ABOVE");
 
-var my_rest=[];
-console.log(projection([-122.4, 47.6]));
-console.log(projection([0, 0]));
+// var my_rest=[];
+// console.log(projection([-122.4, 47.6]));
+// console.log(projection([0, 0]));
 
-d3.csv("rest_meta.csv", function(error, data) {
+
+
+
+
+d3.json("/search", function(error, data) {
   if (error) throw error;
+  // console.log(data)
+
+  var cat_list = [];
+  var color = ["#f7fcfd","#e5f5f9","#ccece6","#99d8c9","#66c2a4","#41ae76","#238b45","#006d2c","#00441b"];
 
   data.forEach(function(d) {
-    d.category = d.category;
-    console.log(d.location);
-    d.long = d['location.coordinate.longitude'];
-    d.lat = d['location.coordinate.latitude'];
+    d.category = d.categories;
+    cat_list.push(d.category)
+    if (d.location.coordinate){
+      d.long = d.location["coordinate"]["longitude"];
+      d.lat = d.location["coordinate"]["latitude"];
+      d.review_count = d.review_count;
+      d.rating = d.rating;
+      d.name = d.name;
+    }
+  // } else {
+    //   data.remov
+    // }
+
   });
+// 
+    // set = {};
+    // console.log(cat_list);
+    // console.log(cat_list[0][0][0]);
+
+    // for (var i = 0; i < cat_list.length; i++) {
+    //   if (cat_list[i]){
+    //     if (cat_list[i][0]){
+    //       if (cat_list[i][0][0]){
+    //         var r = set[cat_list[i][0][0]];
+    //         set[cat_list[i][0][0]] = r ? r + 1 : 1;
+    //       }
+    //     else{
+    //       var r = set[cat_list[i][0]];
+    //       set[cat_list[i][0]] = r ? r + 1 : 1;
+    //     }
+    //     }
+    //   }
+    // }
+    // list = [];
+    // for (var item in set)
+    //   list.push();
+    // var sorted = list.sort();
+    // console.log(list);
+    // console.log(list.length);
+    // console.log(list[0]);
+    // console.log()
+
+    // var color = d3.scale.category10();
 
   svg.selectAll(".dot")
     .data(data)
     // console.log(data);
-    .enter().append("circle")
+    .enter().append("circle").style("stroke", function(d){
+      return color[d.rating*2 - 1]
+      }).style("fill", "none")
     .attr("class", "dot")
-    .attr("r", 10)
+    .attr("r", function(d){
+        var log = d3.scale.log();
+        var log2 = log.base(2);
+        console.log(log2(d.review_count));
+        return (log2(d.review_count) * 5);
+    })
     .attr("cx", function(d){
-        // console.log(d);
-        // console.log(d.longitude)
         console.log(d);
         console.log(projection([d.long, d.lat]));
         return projection([d.long, d.lat])[0];
-        // return projection([-122.4, 47.6])[0];
-        // console.log(g);
     })
     .attr("cy", function(d){
         return projection([d.long, d.lat])[1];
-        // return projection([-122.4, 47.6])[1];
     });
 
 });
