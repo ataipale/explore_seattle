@@ -92,9 +92,16 @@ d3.json("/search", function(error, data) {
       d.name = d.name;
     }
   });
-  
+
+  // makedots(data);
+  process(data);
+
+});
+
+function process(data) {
+
   var color = ["#ff7f00","#377eb8","#984ea3","#ffff33","#4daf4a","#ffd92f","#00FF00","#00FFFF","#e41a1c", "#08519c"];
-  var start = new Date().getTime();
+  // var start = new Date().getTime();
 
   var select = d3.select("body").append("select")
       .attr("id", "selecter")
@@ -115,8 +122,9 @@ d3.json("/search", function(error, data) {
   var alertChange = function() {
 
     var newData = eval(d3.select(this).property('value'));
+    console.log(newData);
+    alert(newData);
     updateLegend(newData);
-    alert("BOB!");
   }
 
   //add this event listener to the first menu (as a whole):
@@ -210,8 +218,7 @@ d3.json("/search", function(error, data) {
   // settings for the popover display
   $('[data-toggle="popover"]').popover({trigger: "hover", container: "body", placement: "auto top", title: "TITLE", html: true});
 
-
-});
+};
 
 
 
