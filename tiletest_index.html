@@ -6,6 +6,12 @@ body {
   margin: 0;
 }
 
+#selecter {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+}
+
 /*.dot {
   stroke: #0000ff;
   z-index: 2;
@@ -31,6 +37,7 @@ path {
 <script src="/static/d3.geo.tile.min.js"></script>
 <script src="http://code.jquery.com/jquery.js"></script>
 <script src="/static/js/bootstrap.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/lodash.js/3.9.3/lodash.min.js"></script>
 
 <script>
 
@@ -44,7 +51,7 @@ var tiler = d3.geo.tile()
 
 var projection = d3.geo.mercator()
     .center([-122.2520, 47.6302])
-    .scale((1 << 21) / 6 / Math.PI)
+    .scale((1 << 21) / 5 / Math.PI)
     .translate([width / 2, height / 2]);
 
 var path = d3.geo.path()
@@ -78,99 +85,95 @@ svg.selectAll("g")
 
 console.log("ABOVE");
 
+function cleanCategories(categoryList) {
+  var categories = [];
+  if (categoryList){
+    for (var i = 0; i < categoryList.length; i++) {
+      categories.push(categoryList[i][0]);
+    }
+  }
+  return categories;
+}
+
 d3.json("/search", function(error, data) {
   if (error) throw error;
   // console.log(data)
 
   data.forEach(function(d) {
-    d.category = d.categories;
+    d.category = cleanCategories(d.categories);
     if (d.location.coordinate){
       d.long = d.location["coordinate"]["longitude"];
       d.lat = d.location["coordinate"]["latitude"];
       d.review_count = d.review_count;
       d.rating = d.rating;
       d.name = d.name;
+      d.key = d.name + '.' + d.long + '.' + d.lat;
     }
   });
 
+
   // makedots(data);
-  process(data);
+  // process(data);
+  dropdown(data);
+
 
 });
 
-function process(data) {
+function dropdown(data) {
 
-  var color = ["#ff7f00","#377eb8","#984ea3","#ffff33","#4daf4a","#ffd92f","#00FF00","#00FFFF","#e41a1c", "#08519c"];
-  // var start = new Date().getTime();
+  var singleCategories = _.sortBy(_.uniq(_.flatten(_.map(data, "category"))));
 
   var select = d3.select("body").append("select")
       .attr("id", "selecter")
       .on("change", "mouseover");
 
   var options = select.selectAll("option")
-        .data(data);
+        .data(singleCategories);
 
   options.enter()
-          .append("option")
-          .attr("value", function(d, i) {
-              return d.name;
-          })
-          .text(function(d, i) {
-              return d.name;
-          });
+      .append("option")
+      .attr("value", function(d, i) {
+          return d;
+      })
+      .text(function(d, i) {
+          return d;
+      });
 
   var alertChange = function() {
 
-    var newData = eval(d3.select(this).property('value'));
-    console.log(newData);
-    alert(newData);
-    updateLegend(newData);
+    var dropdownSelection = d3.select(this).property('value');
+    var filteredData = data.filter(function(d){
+      return d.category.indexOf(dropdownSelection) >= 0;
+    });
+    process(filteredData);
   }
 
   //add this event listener to the first menu (as a whole):
   d3.select("select").on("change", alertChange);
 
-  function updateLegend(newData) {
-
-    // bind data
-    var appending = svg.selectAll('.dot')
-       .data(newData);
-
-    // add new elements
-    appending.enter().append('.dot');
-
-    // update existing elements
-    appending.transition()
-        .duration(0)
-        .style("fill", function(d,i){return color(i);})
-        .attr("x",10)
-        .attr("y",10)
-        .attr("width",function (d) {return d.y; })//d.y;})
-        .attr("height",19);
-
-    // remove old elements
-    appending.exit().remove();
-
 }
 
+function process(data) {
+
+  var color = ["#ff7f00","#377eb8","#984ea3","#ffff33","#4daf4a","#ffd92f","#00FF00","#00FFFF","#e41a1c", "#08519c"];
+  // var start = new Date().getTime();
   // var end = new Date().getTime();
   // var time = end - start;
   // console.log('Execution time: ' + time);
 
   // var start = new Date().getTime();
 
-
   var dots = svg.selectAll(".dot")
-    .data(data)
-    .attr("class", "dot")
-    // console.log(data);
-    .enter();
+    .data(data, function(d) { return d.key; });
 
-  dots.append("circle").style("stroke", function(d){
-      // console.log(color[d.rating*2]);
+  dots.exit().attr('bla', function(d, i){
+    console.log("EXIT:" + d.key + "  " + i);
+    }).remove();
+
+  dots.enter().append("circle").attr("class", "dot")
+    .style("fill", function(d, i){
       return color[(d.rating*2) - 1];
-      }).style("fill", "none")
-    
+      }).style("opacity", 0.4)
     .attr("r", function(d){
         var log = d3.scale.log();
         var log2 = log.base(2);
@@ -191,41 +194,25 @@ function process(data) {
       return d.name;
     })
     .attr("data-content", function (d) {
-      var categories = [];
-        if (d.category){
-          if (typeof(d.category[0])==='object'){
-            console.log(d.category)
-            for (var i = 0; i < d.category.length; i++) {
-              console.log(d.category[0]);
-              categories.push(d.category[i][0]);
-            }
-          }
-
-        }
       var cat = "Categories: ";
       var rat = "Rating: "
-      return cat.bold() + categories.join(", ") + "<br>" + rat.bold() + d.rating;
+      return cat.bold() + d.category.join(", ") + "<br>" + rat.bold() + d.rating;
     })
     .on("mouseover", function (d) {
       d3.select(this)
-        .style("opacity", 0.2);
+        .style("opacity", 1);
     })
     .on("mouseout", function (d) {
       d3.select(this)
-        .style("opacity", 1);
+        .style("opacity", 0.4);
     });
+
 
   // settings for the popover display
   $('[data-toggle="popover"]').popover({trigger: "hover", container: "body", placement: "auto top", title: "TITLE", html: true});
 
 };
 
-
-
-
-
-
-    // .enter().append()
 
 
 </script>
