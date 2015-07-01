@@ -1,5 +1,17 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
+
+<head>
+<link href="/static/css/d3.slider.css" rel="stylesheet">
+<link href="/static/css/bootstrap.min.css" rel="stylesheet" media="screen">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script>
+<script src="/static/d3.geo.tile.min.js"></script>
+<script src="http://code.jquery.com/jquery.js"></script>
+<script src="/static/js/bootstrap.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/lodash.js/3.9.3/lodash.min.js"></script>
+<script src="/static/js/d3.slider.js"> </script>
+</head>
+
 <style>
 
 body {
@@ -10,7 +22,20 @@ body {
   position: absolute;
   top: 20px;
   left: 20px;
+  width: 25%;
+  /*font-size: 24px;*/
+  padding: 20px 20px;
 }
+
+/*#slider {
+  position: absolute;
+  top: 50px;
+  left: 20px;
+  width: 25%;
+  /*font-size: 24px;*/
+  /*padding: 20px 20px;*/
+/*  fill: white;
+}*/
 
 /*.dot {
   stroke: #0000ff;
@@ -30,14 +55,24 @@ path {
 .highway { stroke: #f39; stroke-width: 1.5px; }
 .rail { stroke: #7de; }
 
+.slider-container {
+  position: absolute;
+  bottom: 20px;
+  /*note: make left percent 100-width / 2 to center*/
+  left: 5%;
+  width: 90%;
+  height: 5%;
+  fill: rgb(255, 50, 153);
+  background-color: rgba(255, 255, 255, 0.5);
+  padding: 20px;
+  margin: 10px;
+}
+
 </style>
+
 <body>
-<link href="/static/css/bootstrap.min.css" rel="stylesheet" media="screen">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script>
-<script src="/static/d3.geo.tile.min.js"></script>
-<script src="http://code.jquery.com/jquery.js"></script>
-<script src="/static/js/bootstrap.min.js"></script>
-<script src="//cdnjs.cloudflare.com/ajax/libs/lodash.js/3.9.3/lodash.min.js"></script>
+
+<div class="slider-container"><div id="slider" class="d3-slider"></div></div>
 
 <script>
 
@@ -115,9 +150,14 @@ d3.json("/search", function(error, data) {
   // makedots(data);
   // process(data);
   dropdown(data);
+  slider(data);
 
 
 });
+
+function slider(data) {
+  var select = d3.select("#slider").call(d3.slider().axis(true).min(1).max(15).step(3));
+}
 
 function dropdown(data) {
 
