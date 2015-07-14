@@ -35,6 +35,17 @@ path {
   stroke-linecap: round;
 }
 
+.popover-content, .popover-content .body {
+    max-width: 100%;
+    max-length: 30%;
+}
+.popover-content li {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
 .major_road { stroke: #776; }
 .minor_road { stroke: #ccb; }
 .highway { stroke: #f39; stroke-width: 1.5px; }
@@ -127,13 +138,14 @@ d3.json("/search", function(error, data) {
       d.review_count = d.review_count;
       d.rating = d.rating;
       d.name = d.name;
-      d.summary = d.summary;
+      // xxx fix summary not matching name?!
+      d.summary = d.summary; 
       d.reading = d.reading;
       d.key = d.name + '.' + d.long + '.' + d.lat;
     }
   });
 
-  process(data);
+  // process(data);
   dropdown(data);
   slider(data);
 
@@ -141,7 +153,7 @@ d3.json("/search", function(error, data) {
 
 function slider(data) {
   var select = d3.select("#slider").call(d3.slider().axis(true).min(1).max(15).step(3));
-  //     .on("change", function(d) {
+  //     .on("slide", function(d) {
   //         var current = d3.select("#handle-one").style,
   //         year = current.substring(0, 4),
   //         month = current.substring(5);
@@ -226,7 +238,6 @@ function process(data) {
     .data(data, function(d) { return d.key; });
 
   dots.exit().attr('bla', function(d, i){
-    console.log("EXIT:" + d.key + "  " + i);
     }).remove();
 
   dots.enter().append("circle").attr("class", "dot")
@@ -267,8 +278,7 @@ function process(data) {
       var rat = "Rating: "
       var sum = "Review Summary: "
       var read =  "Reading Level: "
-      return cat.bold() + d.category.join(", ") + "<br>" + rat.bold() + d.rating  + "<br>" + 
-          sum.bold() + d.summary  + "<br>" + read.bold() + d.reading;
+      return cat.bold() + d.category.join(", ") + "<br>" + rat.bold() + d.rating + "<br>" + read.bold() + d.reading + "<br>" + sum.bold() + d.summary ;
     })
     .on("mouseover", function (d) {
       d3.select(this)

@@ -21,13 +21,14 @@ def homepage():
 
 @app.route('/search')
 def search():
-    # return "Dog!!!"
     data = coll.find({'reviews': {'$exists' : True}}, {'reviews': 0})
     return json_util.dumps(data)
+
+
     # return open("yelp_no_rev.json", "r")
     # return mongo.db.seattle_only_meta.find()
-    # with open("sum_read_yelp.json", "r") as f:
-    #     return json.load(f)
+    # with open("./data/seattle_no_rev.json", "r") as f:
+        # return json.load(f)
     
 # add a rule for the index page.
 # app.add_url_rule('/', 'index', (lambda: )

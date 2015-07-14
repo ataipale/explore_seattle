@@ -1,2 +1,8 @@
 yelp_no_rev.json
 sum_read_yelp.json
+
+
+# Elastic Beanstalk Files
+.elasticbeanstalk/*
+!.elasticbeanstalk/*.cfg.yml
+!.elasticbeanstalk/*.global.yml
