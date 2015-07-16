@@ -152,29 +152,23 @@ d3.json("/search", function(error, data) {
 });
 
 function slider(data) {
-  var select = d3.select("#slider").call(d3.slider().axis(true).min(1).max(15).step(3));
-  //     .on("slide", function(d) {
-  //         var current = d3.select("#handle-one").style,
-  //         year = current.substring(0, 4),
-  //         month = current.substring(5);
-  //         d3.select("#month").text(""+month);
-  //         d3.select("#year").text(""+year);
-  // var new_data = matrices[current]
-  // rerender(new_data);
-  // });
 
+  var alertChange = function(evt, value) {
+    console.log(evt);
+    console.log(value);
+    var min = value[ 0 ];
+    var max = value[ 1 ];
 
-  // var alertChange = function() {
+    var filteredData = data.filter(function(d){
+      return d.reading >= min && d.reading <= max;
+    });
+    console.log(min);
+    console.log(max);
+    console.log(filteredData);
+    process(filteredData);
+  }
 
-  //   // var sliderSelection = d3.select(this).property('value'); xxx
-  //   var filteredData = data.filter(function(d){
-  //     return d.category.indexOf(dropdownSelection) >= 0;
-  //   });
-  //   process(filteredData);
-  // }
-
-  // //add this event listener to the first menu (as a whole):
-  // d3.select("select").on("change", alertChange);
+  var select = d3.select("#slider").call(d3.slider().axis(true).min(1).max(15).step(3).value( [ 1, 2 ] ).on("slide", alertChange));
 
 }
 
