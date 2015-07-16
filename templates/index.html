@@ -162,9 +162,6 @@ function slider(data) {
     var filteredData = data.filter(function(d){
       return d.reading >= min && d.reading <= max;
     });
-    console.log(min);
-    console.log(max);
-    console.log(filteredData);
     process(filteredData);
   }
 
@@ -198,7 +195,7 @@ function dropdown(data) {
     var filteredData = data.filter(function(d){
       return d.category.indexOf(dropdownSelection) >= 0;
     });
-    process(slider(filteredData));
+    slider(filteredData);
   }
 
   //add this event listener to the first menu (as a whole):
