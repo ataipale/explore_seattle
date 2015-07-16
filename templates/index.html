@@ -147,7 +147,7 @@ d3.json("/search", function(error, data) {
 
   // process(data);
   dropdown(data);
-  slider(data);
+  // slider(data);
 
 });
 
@@ -198,7 +198,7 @@ function dropdown(data) {
     var filteredData = data.filter(function(d){
       return d.category.indexOf(dropdownSelection) >= 0;
     });
-    process(filteredData);
+    process(slider(filteredData));
   }
 
   //add this event listener to the first menu (as a whole):
