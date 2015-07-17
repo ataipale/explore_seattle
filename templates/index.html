@@ -153,6 +153,10 @@ d3.json("/search", function(error, data) {
 
 function slider(data) {
 
+  $("#slider").empty();
+  // process(data);
+
+
   var alertChange = function(evt, value) {
     console.log(evt);
     console.log(value);
@@ -165,7 +169,18 @@ function slider(data) {
     process(filteredData);
   }
 
-  var select = d3.select("#slider").call(d3.slider().axis(true).min(1).max(15).step(3).value( [ 1, 2 ] ).on("slide", alertChange));
+
+  var initialValue = [ 1, 2 ];
+  alertChange({}, initialValue);
+  var select = d3.select("#slider").call(
+    d3.slider()
+      .axis(true)
+      .min(1)
+      .max(15)
+      .step(3)
+      .value(initialValue)
+      .on("slide", alertChange)
+  );
 
 }
 
