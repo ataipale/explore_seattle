@@ -19,6 +19,19 @@ def homepage():
     return render_template('index.html')
     # return header_text + say_hello() + instructions + footer_text
 
+@app.route('/about-seattle')
+def about():
+
+    print 'about!'
+    return render_template('about.html')
+
+@app.route('/contact')
+def contact():
+
+    print 'contact!'
+    return redirect("http://www.alextaipale.com/about", code=302)
+
+
 @app.route('/search')
 def search():
     data = coll.find({'reviews': {'$exists' : True}}, {'reviews': 0})
@@ -43,4 +56,4 @@ if __name__ == "__main__":
     # Setting debug to True enables debug output. This line should be
     # removed before deploying a production app.
     app.debug = True
-    app.run()
+    app.run(host='0.0.0.0')

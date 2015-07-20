@@ -2,9 +2,9 @@
 <meta charset="utf-8">
 
 <head>
-{# <link href="/static/css/style.css" rel="stylesheet"> #}
 <link href="/static/css/d3.slider.css" rel="stylesheet">
 <link href="/static/css/bootstrap.min.css" rel="stylesheet" media="screen">
+<link href="/static/css/style.css" rel="stylesheet">
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script>
 <script src="/static/d3.geo.tile.min.js"></script>
@@ -14,124 +14,20 @@
 <script src="/static/js/d3.slider.js"> </script>
 </head>
 
-<style>
-
-body {
-  margin: 0;
-}
-
-body
-{
-    font-family: Helvetica, Sans-Serif;
-}
-
-p{
-    color: #F0F0F0;
-    text-decoration: none;
-    font-family: "Copperplate";
-    font-size: 45px;
-    letter-spacing: 1px;
-    line-height: 50%;
-    top-margin: 0px;
-    padding-left: 18px;
-    padding-top: 1px;
-    float: left;
-}
-
-#other {
-    float: right;
-    font-size: 26px;
-    padding-right: 9px;
-    padding-top: 25px;
-    color: #FF3299;
-    text-decoration: none;
-    font-family: "Helvetica";
-    float: right;
-}
-
-#selecter {
-  position: absolute;
-  top: 10px;
-  left: 10px;
-  width: 25%;
-  z-index: 100;
-  /*font-size: 24px;*/
-  padding: 20px 20px;
-}
-
-
-path {
-  fill: none;
-  stroke: #000;
-  stroke-linejoin: round;
-  stroke-linecap: round;
-}
-
-.titles {
-  position: fixed;
-  left: 50%;
-  top: 0px;
-  transform: translate(-50%, -50%);
-  -webkit-transform: translate(-50%, -50%);
-  -ms-transform: translate(-50%, -50%);
-  text-align: left;
-  background-color: black;
-  width: 100%;
-  height: 76px;
-}
-
-.popover {
-  background-color: blanchedalmond;
-
-}
-
-.popover-content {
-  padding: 0px 4px;
-}
-
-/*.popover-content li {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    overflow: hidden;
-    white-space: nowrap;
-}*/
-
-.major_road { stroke: #776; }
-.minor_road { stroke: #ccb; }
-.highway { stroke: #f39; stroke-width: 1.5px; }
-.rail { stroke: #7de; }
-
-.slider-container {
-  position: absolute;
-  bottom: 20px;
-  /*note: make left percent 100-width / 2 to center*/
-  left: 5%;
-  width: 90%;
-  height: 5%;
-  fill: rgb(255, 50, 153);
-  background-color: rgba(255, 255, 255, 0.5);
-  padding: 20px;
-  margin: 10px;
-}
-
-
-</style>
 
 <body>
 
 <div id="wrapper" style="position: relative; z-index: 99;">
                 
                 <div class="titles" id="topbar">
-                    <p id="other"><a href="/krdooley" id="other">Contact</a></p>
-                    <p id="other"><a href="/krdooley" id="other">About</a></p>
+                    <p id="other"><a href="/about-seattle" id="other">About</a></p>
+                    <p id="title_link"><a href="/" id="title_link">Expl0re</a></p>
                 </div>
 </div>
 
 <div class="slider-container"><div id="slider" class="d3-slider"></div></div>
 
 <script>
-
-// $require('bootstrap')
 
 var width = Math.max(960, window.innerWidth),
     height = Math.max(500, window.innerHeight);
@@ -193,7 +89,9 @@ d3.json("/search", function(error, data) {
       d.name = d.name;
       d.summary = d.summary; 
       // d.reading = d.reading;
+      d.url = d.url;
       d.key = d.name + '.' + d.long + '.' + d.lat;
+
     }
   });
 
@@ -207,13 +105,10 @@ function slider(data) {
 
 
   var alertChange = function(evt, value) {
-    // console.log(evt);
-    // console.log(value);
     var min = value[ 0 ];
     var max = value[ 1 ];
 
     var filteredData = data.filter(function(d){
-      console.log(d.rating);
       return d.rating >= min && d.rating <= max;
     });
     process(filteredData);
@@ -259,7 +154,6 @@ function dropdown(data) {
       .sortBy(1).reverse()
       .head()
       .value();
-  console.log(top[0])
 
   var select = d3.select("body").append("select")
       .attr("id", "selecter")
@@ -288,7 +182,6 @@ function dropdown(data) {
     var filteredData = data.filter(function(d){
       return d.category.indexOf(dropdownSelection) >= 0;
     });
-    console.log(filteredData);
     slider(filteredData);
   }
 
@@ -299,7 +192,6 @@ function dropdown(data) {
 
 function process(data) {
 
-  // var color = ["#ff7f00","#377eb8","#984ea3","#ffff33","#4daf4a","#ffd92f","#00FF00","#00FFFF","#e41a1c", "#08519c"];
   var color = [ "#000000",
                 "#000033",
                 "#000066",
@@ -311,13 +203,7 @@ function process(data) {
                 "#9999FF",
                 "#CCCCFF",
                 "#FFFFFF",
-                ];
-  // var start = new Date().getTime();
-  // var end = new Date().getTime();
-  // var time = end - start;
-  // console.log('Execution time: ' + time);
-
-  // var start = new Date().getTime();
+                ].reverse();
 
   var dots = svg.selectAll(".dot")
     .data(data, function(d) { return d.key; });
@@ -327,18 +213,9 @@ function process(data) {
 
   dots.enter().append("circle").attr("class", "dot")
     .style("fill", function(d, i){
-      var readNum;
-      // if (d.reading > 12){
-      //   readNum = 12;
-      // }
-      // if (d.reading < 1) {
-      //   readNum = 1;
-      // }
-      // else {
-      //   readNum = Math.floor(d.reading);
-      // }
-      return color[d.rating*2];
-      }).style("opacity", 0.4)
+        return color[d.rating*2];
+      })
+    .style("opacity", 0.4)
     .attr("r", function(d){
         var log = d3.scale.log();
         var log2 = log.base(2);
@@ -360,8 +237,7 @@ function process(data) {
       var cat = "Categories: ";
       var rat = "Rating: "
       var sum = "Review Summary: "
-      var read =  "Reading Level: "
-      return cat.bold() + d.category.join(", ") + "<br>" + rat.bold() + d.rating + "<br>" + read.bold() + d.reading + "<br>" + sum.bold() + d.summary ;
+      return cat.bold() + d.category.join(", ") + "<br>" + rat.bold() + d.rating + "<br>" + sum.bold() + d.summary ;
     })
     .on("mouseover", function (d) {
       d3.select(this)
@@ -370,7 +246,11 @@ function process(data) {
     .on("mouseout", function (d) {
       d3.select(this)
         .style("opacity", 0.4);
-    });
+    })
+    .on("click", function(d){
+      window.location=d.url;
+    })
+    ;
 
 
   // settings for the popover display
@@ -381,3 +261,5 @@ function process(data) {
 
 
 </script>
+
+</body>
