@@ -19,7 +19,7 @@ def homepage():
     return render_template('index.html')
     # return header_text + say_hello() + instructions + footer_text
 
-@app.route('/about-seattle')
+@app.route('/about')
 def about():
 
     print 'about!'
