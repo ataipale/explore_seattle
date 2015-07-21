@@ -2,17 +2,22 @@ import json, requests
 from flask import Flask, request, render_template, redirect
 from pymongo import MongoClient
 from bson import json_util
+import logging
+
+logging.basicConfig(filename='flask.log',level=logging.DEBUG)
 
 client = MongoClient()
 db = client.restaurants
 coll = db.seattle_only_meta
 
-user_agent = request.headers.get('User-Agent')
 
 app = Flask(__name__)
 
 @app.route('/')
 def homepage():
+
+    user_agent = request.headers.get('User-Agent')
+    logging.debug(user_agent)
 
     if "Mozilla" in user_agent:
         return render_template('index_mozilla.html')
