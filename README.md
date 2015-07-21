@@ -3,6 +3,8 @@
 
 D3 / Bootstrap Flask app. Interactive visualization of yelp data on Seattle restaurants, including [a spark-based lexrank summarizer](https://github.com/karlhigley/lexrank-summarizer). [See the visualization](http://www.expl0re.website)
 
+**the visualization works best in Chrome or Safari. Firefox version is a bit odd. :)
+
 Using the Yelp API and [a python web scraper](https://github.com/ataipale/yelp_but_better) I gathered restaurant reviews and information on every yelp-reviewed restaurant in Seattle. The review summaries, restaurant categorization, and rating are visualized on a map of Seattle. 
 
 ##Future Work
