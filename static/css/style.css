@@ -7,6 +7,21 @@ body
     font-family: Helvetica, Sans-Serif;
 }
 
+div#content {
+    display: none;
+    }
+ 
+div#loading {
+    top: 200 px;
+    margin: auto;
+    position: absolute;
+    z-index: 3000;
+    width: 160px;
+    height: 24px;
+    background: url(http://i.imgur.com/3clfryf.gif) no-repeat;
+    cursor: wait;
+    }
+
 p{
     color: #F0F0F0;
     text-decoration: none;
